@@ -1,7 +1,8 @@
-import request from '@/utils/request'
-export function Ceshi (payload) {
+import request from '../utils/request'
+// 销售图表数据
+export function getsalesData (payload) {
   return request({
-    url: '/api/map',
+    url: '/api/seller',
     method: 'get',
     data: payload
   })
