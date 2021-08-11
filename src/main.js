@@ -5,6 +5,7 @@ import store from './store'
 import axios from 'axios'
 import './assets/css/global.scss'
 import * as echarts from 'echarts' // 5.0版本的echarts引入方法
+import '../public/static/theme/chalk.js'
 // import 'echarts-gl'
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
