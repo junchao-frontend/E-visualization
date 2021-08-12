@@ -22,9 +22,14 @@ export default {
     this.initChart()
     this.getData()
     // console.log(window.echarts)
+    window.addEventListener('resize', this.screenAdapter)
+    this.screenAdapter()
   },
   destroyed () {
+    // 清除定时
     clearInterval(this.timerId)
+    // 在组件销毁的时候，需要将监听器取消掉
+    window.removeEventListener('resize', this.screenAdapter)
   },
   methods: {
     initChart () {
@@ -36,6 +41,68 @@ export default {
       this.chartInstance.on('mouseout', () => {
         this.startInterval()
       })
+      // 拆分option 初始化配置option
+      const initOption = {
+        title: {
+          text: '▎商家销售统计',
+          left: 20,
+          top: 20
+        },
+        grid: {
+          top: '20%',
+          right: '6%',
+          left: '3%',
+          bottom: '3%',
+          containLabel: true // 距离是包含坐标轴上的文字
+
+        },
+        xAxis: {
+          type: 'value'
+        },
+        yAxis: {
+          type: 'category'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'line',
+            z: 1,
+            lineStyle: {
+              type: 'solid',
+              color: '#2D3443'
+            }
+
+          }
+        },
+        series: [
+          {
+            type: 'bar',
+            label: {
+              show: true,
+              position: 'right',
+              textStyle: {
+                color: 'white'
+              }
+            },
+            itemStyle: {
+              // 颜色渐变 先指明颜色渐变的方向 按x1,y1,x2,y2
+              color: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                // 百分之0状态下的颜色
+                {
+                  offset: 0,
+                  color: '#5052EE'
+                },
+                {
+                  offset: 1,
+                  color: '#AB6EE5'
+                }
+              ])
+            }
+          }
+        ]
+
+      }
+      this.chartInstance.setOption(initOption)
     },
     getData () {
       getsalesData().then(res => {
@@ -60,22 +127,17 @@ export default {
       const sellerValues = showData.map((item) => {
         return item.value
       })
-      const option = {
-        xAxis: {
-          type: 'value'
-        },
+      const dataOption = {
         yAxis: {
-          type: 'category',
           data: sellerNames
         },
         series: [
           {
-            type: 'bar',
             data: sellerValues
           }
         ]
       }
-      this.chartInstance.setOption(option)
+      this.chartInstance.setOption(dataOption)
     },
     startInterval () {
       if (this.timerId) {
@@ -87,7 +149,35 @@ export default {
           this.currentPage = 1
         }
         this.updateChart()
-      }, 300000)
+      }, 3000)
+    },
+    // 当浏览器的大小发生变化的时候调用的方法
+    screenAdapter () {
+      const titleFontSize = this.$refs.seller_ref.offsetWidth / 100 * 3.6
+      const adapterOption = {
+        title: {
+          textStyle: {
+            fontSize: titleFontSize
+          }
+        },
+        tooltip: {
+          axisPointer: {
+            lineStyle: {
+              width: titleFontSize
+            }
+          }
+        },
+        series: [
+          {
+            barWidth: titleFontSize,
+            itemStyle: {
+              barBorderRadius: [0, titleFontSize / 2, titleFontSize / 2, 0]
+            }
+          }
+        ]
+      }
+      this.chartInstance.setOption(adapterOption)
+      this.chartInstance.resize()
     }
   }
 }
