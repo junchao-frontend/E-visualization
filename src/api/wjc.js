@@ -16,3 +16,12 @@ export function gettrendData (payload) {
     data: payload
   })
 }
+
+// 地图散点数据
+export function getmapData (payload) {
+  return request({
+    url: '/api/map',
+    method: 'get',
+    data: payload
+  })
+}

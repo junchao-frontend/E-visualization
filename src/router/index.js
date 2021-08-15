@@ -19,12 +19,20 @@ const routes = [
     component: () => import('../views/SellerPage.vue')
   },
   {
-    path: '/',
+    path: '/TrendPage',
     name: 'TrendPage',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import('../views/TrendPage.vue')
+  },
+  {
+    path: '/',
+    name: 'MapPage',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import('../views/MapPage.vue')
   }
 ]
 
