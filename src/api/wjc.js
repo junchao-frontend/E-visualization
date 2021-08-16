@@ -25,3 +25,12 @@ export function getmapData (payload) {
     data: payload
   })
 }
+
+// 销售排行数据
+export function getrankData (payload) {
+  return request({
+    url: '/api/rank',
+    method: 'get',
+    data: payload
+  })
+}

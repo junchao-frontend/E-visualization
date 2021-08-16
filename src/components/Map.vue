@@ -74,16 +74,17 @@ export default {
     getData () {
       getmapData().then(res => {
         this.allData = res.data
-        // console.log(this.allData)
+        console.log(this.allData)
         this.updateChart()
       })
     },
     updateChart () {
       const seriesArr = this.allData.map(item => {
+        console.log('item', item)
         return {
           type: 'effectScatter',
           rippleEffect: {
-            scale: 5,
+            scale: 5, // 我感觉是数据的格式不一样
             brushType: 'stroke'
           },
           name: item.name,
@@ -91,6 +92,7 @@ export default {
           coordinateSystem: 'geo'
         }
       })
+      console.log('11111111111', seriesArr)
       const legendArr = this.allData.map(item => {
         return item.name
       })
