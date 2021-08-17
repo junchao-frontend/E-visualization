@@ -34,3 +34,12 @@ export function getrankData (payload) {
     data: payload
   })
 }
+
+// 热销商品占比数据
+export function gethotData (payload) {
+  return request({
+    url: '/api/hotproduct',
+    method: 'get',
+    data: payload
+  })
+}
