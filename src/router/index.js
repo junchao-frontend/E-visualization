@@ -43,12 +43,20 @@ const routes = [
     component: () => import('../views/RankPage.vue')
   },
   {
-    path: '/',
+    path: '/HotPage',
     name: 'HotPage',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import('../views/HotPage.vue')
+  },
+  {
+    path: '/',
+    name: 'StockPage',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import('../views/StockPage.vue')
   }
 ]
 

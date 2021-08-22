@@ -43,3 +43,12 @@ export function gethotData (payload) {
     data: payload
   })
 }
+
+// 库存销量数据
+export function getstockData (payload) {
+  return request({
+    url: '/api/stock',
+    method: 'get',
+    data: payload
+  })
+}
