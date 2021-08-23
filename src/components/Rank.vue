@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { getrankData } from '../api/wjc.js'
 export default {
   name: '',
 
@@ -18,15 +17,25 @@ export default {
       timeId: null // 定时器标识
     }
   },
+  created () {
+    this.$socket.registerCallBack('rankData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'rankData',
+      chartName: 'rank',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
     clearInterval(this.timeId)
+    this.$socket.unRegisterCallBack('rankData')
   },
   methods: {
     initChart () {
@@ -67,16 +76,14 @@ export default {
         this.startInterval()
       })
     },
-    getData () {
-      getrankData().then(res => {
-        this.allData = res.data
-        this.allData.sort((a, b) => {
-          return b.value - a.value
-        })
-        // console.log(this.allData)
-        this.updateChart()
-        this.startInterval()
+    getData (ret) {
+      this.allData = ret
+      this.allData.sort((a, b) => {
+        return b.value - a.value
       })
+      // console.log(this.allData)
+      this.updateChart()
+      this.startInterval()
     },
     updateChart () {
       const colorArr = [

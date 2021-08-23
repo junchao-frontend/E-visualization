@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { gettrendData } from '../api/wjc.js'
+// import { gettrendData } from '../api/wjc.js'
 export default {
   name: '',
 
@@ -25,9 +25,18 @@ export default {
       titleFontSize: 0
     }
   },
+  created () {
+    this.$socket.registerCallBack('trendData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'trendData',
+      chartName: 'trend',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
@@ -62,6 +71,7 @@ export default {
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('trendData')
   },
   methods: {
     initChart () {
@@ -92,12 +102,9 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData () {
-      gettrendData().then(res => {
-        console.log(res)
-        this.allData = res.data
-        this.updateChart()
-      })
+    getData (ret) {
+      this.allData = ret
+      this.updateChart()
     },
     updateChart () {
       // 半透明的颜色值

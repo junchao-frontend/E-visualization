@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import { gethotData } from '../api/wjc.js'
 export default {
   name: '',
 
@@ -19,6 +18,9 @@ export default {
       currentIndex: 0,
       titleFontSize: 0
     }
+  },
+  created () {
+    this.$socket.registerCallBack('hotproductData', this.getData)
   },
   computed: {
     carName () {
@@ -36,12 +38,19 @@ export default {
   },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'hotproductData',
+      chartName: 'hotproduct',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('hotproductData')
   },
   methods: {
     initChart () {
@@ -93,12 +102,9 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData () {
-      gethotData().then(res => {
-        this.allData = res.data
-        // console.log(this.allData)
-        this.updateChart()
-      })
+    getData (ret) {
+      this.allData = ret
+      this.updateChart()
     },
     updateChart () {
       const seriesData = this.allData[this.currentIndex].children.map(item => {

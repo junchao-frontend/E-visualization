@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { getstockData } from '../api/wjc.js'
 export default {
   name: '',
 
@@ -17,15 +16,25 @@ export default {
       timerId: null
     }
   },
+  created () {
+    this.$socket.registerCallBack('stockData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'stockData',
+      chartName: 'stock',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
     clearInterval(this.timerId)
+    this.$socket.unRegisterCallBack('stockData')
   },
   methods: {
     initChart () {
@@ -45,13 +54,11 @@ export default {
         this.startInterval()
       })
     },
-    getData () {
-      getstockData().then(res => {
-        this.allData = res.data
-        console.log(this.allData)
-        this.updateChart()
-        this.startInterval()
-      })
+    getData (ret) {
+      this.allData = ret
+      // console.log(this.allData)
+      this.updateChart()
+      this.startInterval()
     },
     updateChart () {
       const centerArr = [

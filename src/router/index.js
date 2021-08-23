@@ -51,7 +51,7 @@ const routes = [
     component: () => import('../views/HotPage.vue')
   },
   {
-    path: '/',
+    path: '/StockPage',
     name: 'StockPage',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

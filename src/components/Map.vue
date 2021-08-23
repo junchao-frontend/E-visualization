@@ -6,7 +6,6 @@
 
 <script>
 import axios from 'axios'
-import { getmapData } from '../api/wjc.js'
 import { getProvinceMapInfo } from '../utils/map_utils.js'
 export default {
   name: '',
@@ -18,14 +17,24 @@ export default {
       mapData: {} // 存放地图的矢量数据
     }
   },
+  created () {
+    this.$socket.registerCallBack('mapData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'mapData',
+      chartName: 'map',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('mapData')
   },
   methods: {
     async initChart () {
@@ -71,12 +80,9 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData () {
-      getmapData().then(res => {
-        this.allData = res.data
-        console.log(this.allData)
-        this.updateChart()
-      })
+    getData (ret) {
+      this.allData = ret
+      this.updateChart()
     },
     updateChart () {
       const seriesArr = this.allData.map(item => {

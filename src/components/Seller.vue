@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { getsalesData } from '../api/wjc.js'
 export default {
   name: '',
   data () {
@@ -18,9 +17,18 @@ export default {
       timerId: null // 定时器的标识
     }
   },
+  created () {
+    this.$socket.registerCallBack('sellerData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'sellerData',
+      chartName: 'seller',
+      value: ''
+    })
     // console.log(window.echarts)
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
@@ -30,6 +38,7 @@ export default {
     clearInterval(this.timerId)
     // 在组件销毁的时候，需要将监听器取消掉
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('sellerData')
   },
   methods: {
     initChart () {
@@ -104,18 +113,16 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    getData () {
-      getsalesData().then(res => {
-        this.allData = res.data
-        this.allData.sort((a, b) => {
-          return a.value - b.value
-        })
-        // 每五个元素显示一页 算一下一共有多少页数据
-        this.totalPage = this.allData.length % 5 === 0 ? this.allData.length / 5 : this.allData.length / 5 + 1
-        this.updateChart()
-        // 启动定时器
-        this.startInterval()
+    getData (ret) {
+      this.allData = ret
+      this.allData.sort((a, b) => {
+        return a.value - b.value
       })
+      // 每五个元素显示一页 算一下一共有多少页数据
+      this.totalPage = this.allData.length % 5 === 0 ? this.allData.length / 5 : this.allData.length / 5 + 1
+      this.updateChart()
+      // 启动定时器
+      this.startInterval()
     },
     updateChart () {
       const start = (this.currentPage - 1) * 5
@@ -171,7 +178,7 @@ export default {
           {
             barWidth: titleFontSize,
             itemStyle: {
-              barBorderRadius: [0, titleFontSize / 2, titleFontSize / 2, 0]
+              borderRadius: [0, titleFontSize / 2, titleFontSize / 2, 0]
             }
           }
         ]
