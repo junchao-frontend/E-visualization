@@ -13,6 +13,8 @@
 
 <script>
 // import { gettrendData } from '../api/wjc.js'
+import { getThemeValue } from '../utils/theme_utils.js'
+import { mapState } from 'vuex'
 export default {
   name: '',
 
@@ -50,6 +52,7 @@ export default {
         })
       }
     },
+    ...mapState(['theme']),
     showTitle () {
       if (!this.allData) {
         return ''
@@ -60,7 +63,8 @@ export default {
     showtitleFontSize () {
       // console.log(this.titleFontSize, '111111')
       return {
-        fontSize: this.titleFontSize + 'px'
+        fontSize: this.titleFontSize + 'px',
+        color: getThemeValue(this.theme).titleColor
       }
     },
     marginStyle () {
@@ -75,7 +79,7 @@ export default {
   },
   methods: {
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.trend_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.trend_ref, this.theme)
       const initOption = {
         grid: {
           left: '3%',
@@ -181,6 +185,14 @@ export default {
       this.choiceType = currentType
       this.updateChart()
       this.selectShow = false
+    }
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose()
+      this.initChart()
+      this.screenAdapter()
+      this.updateChart()
     }
   }
 }

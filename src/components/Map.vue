@@ -7,6 +7,7 @@
 <script>
 import axios from 'axios'
 import { getProvinceMapInfo } from '../utils/map_utils.js'
+import { mapState } from 'vuex'
 export default {
   name: '',
 
@@ -38,7 +39,7 @@ export default {
   },
   methods: {
     async initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.map_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.map_ref, this.theme)
       const ret = await axios.get('http://localhost:8999/static/map/china.json')
       this.$echarts.registerMap('china', ret.data)
       this.chartInstance.on('click', async arg => {
@@ -86,7 +87,7 @@ export default {
     },
     updateChart () {
       const seriesArr = this.allData.map(item => {
-        console.log('item', item)
+        // console.log('item', item)
         return {
           type: 'effectScatter',
           rippleEffect: {
@@ -98,7 +99,7 @@ export default {
           coordinateSystem: 'geo'
         }
       })
-      console.log('11111111111', seriesArr)
+      // console.log('11111111111', seriesArr)
       const legendArr = this.allData.map(item => {
         return item.name
       })
@@ -137,6 +138,17 @@ export default {
         }
       }
       this.chartInstance.setOption(revertOption)
+    }
+  },
+  computed: {
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose()
+      this.initChart()
+      this.screenAdapter()
+      this.updateChart()
     }
   }
 }

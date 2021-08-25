@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: '',
   data () {
@@ -42,7 +43,7 @@ export default {
   },
   methods: {
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.seller_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.seller_ref, this.theme)
       // 对图表对象进行鼠标事件的监听
       this.chartInstance.on('mouseover', () => {
         clearInterval(this.timerId)
@@ -185,6 +186,17 @@ export default {
       }
       this.chartInstance.setOption(adapterOption)
       this.chartInstance.resize()
+    }
+  },
+  computed: {
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose()
+      this.initChart()
+      this.screenAdapter()
+      this.updateChart()
     }
   }
 }

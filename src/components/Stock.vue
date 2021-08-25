@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: '',
 
@@ -38,7 +39,7 @@ export default {
   },
   methods: {
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.stock_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.stock_ref, this.theme)
       const initOption = {
         title: {
           text: '▎库存和销量分析',
@@ -82,7 +83,7 @@ export default {
         return {
           type: 'pie',
           center: centerArr[index],
-          radius: [110, 100],
+          radius: [50, 40],
           hoverAnimation: false, // 关闭鼠标移入到饼图时的动画效果
           labelLine: {
             show: false // 隐藏指示线
@@ -96,7 +97,7 @@ export default {
           },
           data: [
             {
-              name: item.name + '\n' + item.sales,
+              name: item.name + '\n\n' + item.sales,
               label: {
                 normal: {
                   show: true
@@ -132,7 +133,7 @@ export default {
     },
     screenAdapter () {
       const titleFontSize = this.$refs.stock_ref.offsetWidth / 100 * 3.6
-      const innerRadius = titleFontSize * 2
+      const innerRadius = titleFontSize * 2.8
       const outterRaidus = innerRadius * 1.125
       const adapterOption = {
         title: {
@@ -192,6 +193,17 @@ export default {
         }
         this.updateChart()
       }, 3000)
+    }
+  },
+  computed: {
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose()
+      this.initChart()
+      this.screenAdapter()
+      this.updateChart()
     }
   }
 }

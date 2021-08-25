@@ -7,6 +7,7 @@ import SocketService from './utils/socket_service'
 import './assets/css/global.scss'
 import * as echarts from 'echarts' // 5.0版本的echarts引入方法
 import '../public/static/theme/chalk.js'
+import '../public/static/theme/vintage'
 // 引入字体文件
 import './assets/font/iconfont.css'
 SocketService.Instance.connect()

@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { getThemeValue } from '../utils/theme_utils.js'
 export default {
   name: '',
 
@@ -32,8 +34,18 @@ export default {
     },
     catStyle () {
       return {
-        fontSize: this.titleFontSize + 'px'
+        fontSize: this.titleFontSize + 'px',
+        color: getThemeValue(this.theme).titleColor
       }
+    },
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose()
+      this.initChart()
+      this.screenAdapter()
+      this.updateChart()
     }
   },
   mounted () {
@@ -48,21 +60,23 @@ export default {
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },
+
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
     this.$socket.unRegisterCallBack('hotproductData')
   },
   methods: {
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.hot_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.hot_ref, this.theme)
       const initOption = {
         title: {
           text: '▎热销商品的占比',
           left: 20,
-          top: 20
+          top: 20,
+          bottom: 20
         },
         legend: {
-          top: '5%',
+          top: '15%',
           icon: 'circle'
         },
         tooltip: {
@@ -86,6 +100,8 @@ export default {
         series: [
           {
             type: 'pie',
+            radius: 100,
+            center: ['50%', '60%'],
             label: {
               show: false
             },
@@ -137,19 +153,13 @@ export default {
             fontSize: this.titleFontSize
           },
           legend: {
-            itemWidth: this.titleFontSize / 2,
-            itemHeight: this.titleFontSize / 2,
+            itemWidth: this.titleFontSize,
+            itemHeight: this.titleFontSize,
             itemGap: this.titleFontSize / 2,
             textStyle: {
               fontSize: this.titleFontSize / 2
             }
-          },
-          series: [
-            {
-              radius: this.titleFontSize * 4.5,
-              center: ['50%', '50%']
-            }
-          ]
+          }
         }
       }
       this.chartInstance.setOption(adapterOption)
